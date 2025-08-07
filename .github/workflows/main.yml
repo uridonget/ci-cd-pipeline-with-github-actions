@@ -21,7 +21,7 @@ jobs:
           chmod +x tests/lint.sh
           ./tests/lint.sh
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-actions@v3
+        uses: docker/setup-buildx-action@v3
       - name: Build Docker image
         run: docker build -t my-server:latest .
       - name: Run Docker container
