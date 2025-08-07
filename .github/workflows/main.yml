@@ -1,0 +1,35 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: Run lint check
+        run:
+          chmod +x tests/lint.sh
+          ./tests/lint.sh
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-actions@v3
+      - name: Build Docker image
+        run: docker build -t my-server:latest .
+      - name: Run Docker container
+        run: docker run -d -p 8080:8080 --name my-server-container my-server:latest
+      - name: Run health check
+        run: |
+          chmod +x tests/health_check.sh
+          ./tests/health_check.sh
+      - name: Show container logs
+        if: always()
+        run: docker logs my-server-container
